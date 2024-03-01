@@ -5,11 +5,11 @@
         "access": "Allow",
         "protocol": "Tcp",
         "source_port_range": "*",
-        "destination_port_range": "80",
-        "source_address_prefix": "*",
-        "destination_address_prefix": "*",
-        "source_application_security_group_ids": "",
-        "destination_application_security_group_ids": ""
+        "destination_port_range": "8000",
+        "source_address_prefix": null,
+        "destination_address_prefix": null,
+        "source_application_security_group_ids": "src-asg",
+        "destination_application_security_group_ids": "dest-asg"
     },
     "rule2": {
         "priority": 200,
@@ -17,10 +17,8 @@
         "access": "Allow",
         "protocol": "Tcp",
         "source_port_range": "*",
-        "destination_port_range": "443",
-        "source_address_prefix": "*",
-        "destination_address_prefix": "*",
-        "source_application_security_group_ids": "",
-        "destination_application_security_group_ids": ""
+        "destination_port_range": "444",
+        "source_address_prefix": "VirtualNetwork",
+        "destination_address_prefix": "AzureLoadBalancer"
     }
 }
