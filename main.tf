@@ -27,8 +27,8 @@ resource "azurerm_network_security_rule" "nsg_rule" {
   #description        = 
   source_port_range   = each.value.source_port_range
   destination_port_range  = each.value.destination_port_range
-  source_address_prefix   = each.value.source_address_prefix
-  destination_address_prefix  = each.value.destination_address_prefix
+  source_address_prefix   = lookup(each.value, "source_address_prefix", null)
+  destination_address_prefix  = lookup(each.value, "destination_address_prefix", null)
   source_application_security_group_ids = lookup(each.value, "source_application_security_group_ids", null)
   destination_application_security_group_ids = lookup(each.value, "destination_application_security_group_ids", null)
   resource_group_name = var.resource_group_name
