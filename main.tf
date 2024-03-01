@@ -4,7 +4,7 @@ provider "azurerm" {
 
 resource "azurerm_network_security_group" "nsg" {
   name                = var.nsg_name
-  location            = azurerm_resource_group.nsg_rg.location
+  location            = azurerm_resource_group.location
   resource_group_name = var.resource_group_name
 }
 
