@@ -7,7 +7,9 @@
         "source_port_range": "*",
         "destination_port_range": "80",
         "source_address_prefix": "*",
-        "destination_address_prefix": "*"
+        "destination_address_prefix": "*",
+        "source_application_security_group_ids": "",
+        "destination_application_security_group_ids": ""
     },
     "rule2": {
         "priority": 200,
@@ -17,6 +19,8 @@
         "source_port_range": "*",
         "destination_port_range": "443",
         "source_address_prefix": "*",
-        "destination_address_prefix": "*"
+        "destination_address_prefix": "*",
+        "source_application_security_group_ids": "",
+        "destination_application_security_group_ids": ""
     }
 }
