@@ -12,3 +12,8 @@ variable "resource_group_name" {
   description = "The name of the resource group containing the NSG"
   type        = string
 }
+
+variable "nsg_location" {
+  description = "Location in which the NSG / RG is present"
+  type        = string
+}
