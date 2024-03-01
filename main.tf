@@ -2,11 +2,11 @@ provider "azurerm" {
   features {}
 }
 
-resource "azurerm_network_security_group" "nsg" {
-  name                = var.nsg_name
-  location            = var.nsg_location
-  resource_group_name = var.resource_group_name
-}
+#resource "azurerm_network_security_group" "nsg" {
+#  name                = var.nsg_name
+#  location            = var.nsg_location
+#  resource_group_name = var.resource_group_name
+#}
 
 locals {
   nsg_rules = jsondecode(file(var.nsg_rules))
@@ -24,5 +24,5 @@ resource "azurerm_network_security_rule" "nsg_rule" {
   source_address_prefix   = each.value.source_address_prefix
   destination_address_prefix  = each.value.destination_address_prefix
   resource_group_name = var.resource_group_name
-  network_security_group_name = azurerm_network_security_group.nsg.name
+  network_security_group_name = var.nsg_name
 }
