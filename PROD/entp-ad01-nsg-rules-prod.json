@@ -6,8 +6,8 @@
         "protocol": "Tcp",
         "source_port_range": "*",
         "destination_port_range": "8000",
-        "source_application_security_group_ids": "[/subscriptions/e044f03e-6ca8-4227-af03-06b4179119e2/resourceGroups/APIM-RG/providers/Microsoft.Network/applicationSecurityGroups/SRC-ASG]",
-        "destination_application_security_group_ids": "[/subscriptions/e044f03e-6ca8-4227-af03-06b4179119e2/resourceGroups/APIM-RG/providers/Microsoft.Network/applicationSecurityGroups/dest-asg]"
+        "source_application_security_group_ids": ["/subscriptions/e044f03e-6ca8-4227-af03-06b4179119e2/resourceGroups/APIM-RG/providers/Microsoft.Network/applicationSecurityGroups/SRC-ASG"],
+        "destination_application_security_group_ids": ["/subscriptions/e044f03e-6ca8-4227-af03-06b4179119e2/resourceGroups/APIM-RG/providers/Microsoft.Network/applicationSecurityGroups/dest-asg"]
     },
     "rule2": {
         "priority": 200,
