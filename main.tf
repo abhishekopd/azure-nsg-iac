@@ -1,15 +1,11 @@
 terraform {
-  required_providers {
-    azurerm = {
-      source  = "hashicorp/azurerm"
-      version = "~>3.0"
-    }
-  }
+  # This is used to store the State files to Azure Storage Account. 
+  # If using different Storage Accounts for different envs these could be moved to tfvars file too. 
   backend "azurerm" {
-      resource_group_name  = "gc-lab-rg-abhishek"
-      storage_account_name = "gcstgadrgtest"
-      container_name       = "tfstate"
-      key                  = "PublicIP"
+      resource_group_name  = "cloud-shell-storage-centralindia" # RG of the Storage Acc.
+      storage_account_name = "csg10032000fd9ed4d1"              # Storage Account's name.
+      container_name       = "tfstate"                          # Name of the SA Container.
+      key                  = "NSG/nsg.tfstate"                  # Name/Path of the state file.
   }
 }
 
@@ -28,11 +24,12 @@ resource "azurerm_network_security_rule" "nsg_rule" {
   direction           = each.value.direction
   access              = each.value.access
   protocol            = each.value.protocol
+  #description        = 
   source_port_range   = each.value.source_port_range
   destination_port_range  = each.value.destination_port_range
   source_address_prefix   = each.value.source_address_prefix
   destination_address_prefix  = each.value.destination_address_prefix
+  
   resource_group_name = var.resource_group_name
   network_security_group_name = var.nsg_name
-  #description ??
 }
