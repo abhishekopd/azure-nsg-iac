@@ -1,0 +1,88 @@
+trigger:
+  branches:
+    include:
+      - main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+stages:
+- stage: GitModifiedFilesStage
+    jobs:
+    - job: gitModifiedFilesJob
+      steps:
+        - name: gitModifiedFilesStep
+          powershell: |
+              CD "$(System.DefaultWorkingDirectory)"
+              Get-ChildItem -Path $(System.DefaultWorkingDirectory)
+              $modifiedfiles = (git diff --name-only HEAD HEAD~1)
+              $modifiedfiles | ForEach-Object {
+              $FileName = $_
+              Write-Output "FileName" $FileName
+
+              IF (($FileName -ilike "*dev.tfvars") -and (Test-Path $FileName)) {
+              Add-Content -Path $(system.defaultworkingdirectory)/dev.txt -Value $FileName
+              Write-Output "##vso[task.setvariable variable=devBuild]true"
+              Write-Output "##vso[task.setvariable variable=DEV;isOutput=true]DEVDeploy" 
+              }
+              IF (($FileName -ilike "*qc.tfvars") -and (Test-Path $FileName)) {
+              Add-Content -Path $(system.defaultworkingdirectory)/qc.txt -Value $FileName
+              Write-Output "##vso[task.setvariable variable=qcBuild]true"
+              Write-Output "##vso[task.setvariable variable=QC;isOutput=true]QCDeploy"  
+              }
+              IF (($FileName -ilike "*prod.tfvars") -and (Test-Path $FileName)) {
+              Add-Content -Path $(system.defaultworkingdirectory)/prod.txt -Value $FileName
+              Write-Output "##vso[task.setvariable variable=prodBuild]true"
+              Write-Output "##vso[task.setvariable variable=PROD;isOutput=true]PRODDeploy" 
+              }
+        - task: PublishBuildArtifacts@1
+          displayName: Publish Build Artifact - Dev
+          condition: eq(variables['devBuild'],'true')
+          inputs:
+            PathtoPublish: "$(Agent.BuildDirectory)/s/dev.txt"
+            ArtifactName: "devTempFile"
+            publishLocation: "Container"
+        - task: PublishBuildArtifacts@1
+          displayName: Publish Build Artifact - QC
+          condition: eq(variables['qcBuild'],'true')
+          inputs:
+            PathtoPublish: "$(Agent.BuildDirectory)/s/qc.txt"
+            ArtifactName: "qcTempFile"
+            publishLocation: "Container"
+        - task: PublishBuildArtifacts@1
+          displayName: Publish Build Artifact - PROD
+          condition: eq(variables['prodBuild'],'true')
+          inputs:
+            PathtoPublish: "$(Agent.BuildDirectory)/s/prod.txt"
+            ArtifactName: "prodTempFile"
+            publishLocation: "Container"
+
+- stage: DEV
+  displayName: 'Deploy DEV'
+  condition: eq(dependencies.GitModifiedFilesStage.outputs['gitModifiedFilesJob.gitModifiedFilesStep.DEV'],'DEVDeploy')
+  dependsOn:
+  - GitModifiedFilesStage
+  jobs:
+  - job: TerraformApply
+    displayName: 'Terraform Apply'
+    steps:
+    - checkout: self
+    - task: DownloadBuildArtifacts@0
+      displayName: Download the artifact - Dev
+      inputs:
+        buildType: "current"
+        downloadType: "single"
+        artifactName: "devTempFile"
+        downloadPath: "$(System.ArtifactsDirectory)"
+    - script: |
+
+        $FileNames = Get-Content -Path $(System.ArtifactsDirectory)/devTempFile/dev.txt
+        Write-Output "FileNames:"  $FileNames
+        Write-Output "FileNames Count:"  $FileNames.Count
+        foreach ($fileLines in $FileNames)
+          {
+            terraform init
+            terraform workspace select dev
+            terraform apply -var-file=$fileLines
+          }
+                  
