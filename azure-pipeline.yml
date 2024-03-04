@@ -20,17 +20,17 @@ stages:
               $FileName = $_
               Write-Output "FileName" $FileName
 
-              IF (($FileName -ilike "*dev.tfvars") -and (Test-Path $FileName)) {
+              IF (($FileName -ilike "*dev.*") -and (Test-Path $FileName)) {
               Add-Content -Path $(system.defaultworkingdirectory)/dev.txt -Value $FileName
               Write-Output "##vso[task.setvariable variable=devBuild]true"
               Write-Output "##vso[task.setvariable variable=DEV;isOutput=true]DEVDeploy" 
               }
-              IF (($FileName -ilike "*qc.tfvars") -and (Test-Path $FileName)) {
+              IF (($FileName -ilike "*qc.*") -and (Test-Path $FileName)) {
               Add-Content -Path $(system.defaultworkingdirectory)/qc.txt -Value $FileName
               Write-Output "##vso[task.setvariable variable=qcBuild]true"
               Write-Output "##vso[task.setvariable variable=QC;isOutput=true]QCDeploy"  
               }
-              IF (($FileName -ilike "*prod.tfvars") -and (Test-Path $FileName)) {
+              IF (($FileName -ilike "*prod.*") -and (Test-Path $FileName)) {
               Add-Content -Path $(system.defaultworkingdirectory)/prod.txt -Value $FileName
               Write-Output "##vso[task.setvariable variable=prodBuild]true"
               Write-Output "##vso[task.setvariable variable=PROD;isOutput=true]PRODDeploy" 
