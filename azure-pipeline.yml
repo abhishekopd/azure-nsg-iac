@@ -86,14 +86,22 @@ stages:
         azureSubscription: 'AzDO-SC'
         scriptType: 'bash'
         scriptLocation: 'inlineScript'
+        addSpnToEnvironment: true
         inlineScript: |
+
+          export ARM_CLIENT_ID=$servicePrincipalId
+          export ARM_CLIENT_SECRET=$servicePrincipalKey
+          export ARM_TENANT_ID=$tenantId
+          export ARM_SUBSCRIPTION_ID=$(az account show --query id | xargs)
+
           FileNames=$(System.ArtifactsDirectory)/devTempFile/dev.txt
           echo "FileNames: $FileNames"
           echo "FileNames Count: `echo $FileNames|wc -l`"
           for fileLines in `cat $FileNames`;
             do
               subnet=`echo "$fileLines" | cut -d'-' -f2`
-              terraform init -migrate-state
+              terraform init
               terraform workspace select -or-create=true dev-$subnet
               terraform apply -var-file=$fileLines -auto-approve
             done
+        
