@@ -80,8 +80,8 @@ stages:
         Write-Output "FileNames Count:"  $FileNames.Count
         foreach ($fileLines in $FileNames)
           {
-            $subnet=
+            subnet=$(echo "$fileLines" | cut -d'-' -f2)
             terraform init
-            terraform workspace select -or-create=true dev
+            terraform workspace select -or-create=true dev-$subnet
             terraform apply -var-file=$fileLines
           }
