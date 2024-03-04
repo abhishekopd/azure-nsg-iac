@@ -5,7 +5,7 @@ trigger:
 
 variables:
   Agent.Source.Git.ShallowFetchDepth: 10
-  
+
 pool:
   vmImage: 'ubuntu-latest'
 
@@ -78,14 +78,17 @@ stages:
         downloadType: "single"
         artifactName: "devTempFile"
         downloadPath: "$(System.ArtifactsDirectory)"
+    - task: TerraformInstaller@1
+      inputs:
+        terraformVersion: 'latest'    
     - script: |
-        $FileNames = Get-Content -Path $(System.ArtifactsDirectory)/devTempFile/dev.txt
-        Write-Output "FileNames:"  $FileNames
-        Write-Output "FileNames Count:"  $FileNames.Count
-        foreach ($fileLines in $FileNames)
-          {
-            subnet=$(echo "$fileLines" | cut -d'-' -f2)
+        FileNames=$(System.ArtifactsDirectory)/devTempFile/dev.txt
+        echo "FileNames: $FileNames"
+        echo "FileNames Count: `echo $FileNames|wc -l`"
+        for fileLines in `cat $FileNames`;
+          do
+            subnet=`echo "$fileLines" | cut -d'-' -f2`
             terraform init
             terraform workspace select -or-create=true dev-$subnet
-            terraform apply -var-file=$fileLines
-          }
+            terraform apply -var-file=$fileLines -auto-approve
+          done
