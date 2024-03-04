@@ -11,8 +11,7 @@ stages:
   jobs:
   - job: gitModifiedFilesJob
     steps:
-      - name: gitModifiedFilesStep
-        powershell: |
+      - powershell: |
               CD "$(System.DefaultWorkingDirectory)"
               Get-ChildItem -Path $(System.DefaultWorkingDirectory)
               $modifiedfiles = (git diff --name-only HEAD HEAD~1)
@@ -35,6 +34,7 @@ stages:
               Write-Output "##vso[task.setvariable variable=prodBuild]true"
               Write-Output "##vso[task.setvariable variable=PROD;isOutput=true]PRODDeploy" 
               }
+        name: gitModifiedFilesStep      
       - task: PublishBuildArtifacts@1
         displayName: Publish Build Artifact - Dev
         condition: eq(variables['devBuild'],'true')
