@@ -9,10 +9,10 @@ pool:
 stages:
 - stage: GitModifiedFilesStage
   jobs:
-    - job: gitModifiedFilesJob
-      steps:
-        - name: gitModifiedFilesStep
-          powershell: |
+  - job: gitModifiedFilesJob
+    steps:
+      - name: gitModifiedFilesStep
+        powershell: |
               CD "$(System.DefaultWorkingDirectory)"
               Get-ChildItem -Path $(System.DefaultWorkingDirectory)
               $modifiedfiles = (git diff --name-only HEAD HEAD~1)
@@ -35,27 +35,27 @@ stages:
               Write-Output "##vso[task.setvariable variable=prodBuild]true"
               Write-Output "##vso[task.setvariable variable=PROD;isOutput=true]PRODDeploy" 
               }
-        - task: PublishBuildArtifacts@1
-          displayName: Publish Build Artifact - Dev
-          condition: eq(variables['devBuild'],'true')
-          inputs:
-            PathtoPublish: "$(Agent.BuildDirectory)/s/dev.txt"
-            ArtifactName: "devTempFile"
-            publishLocation: "Container"
-        - task: PublishBuildArtifacts@1
-          displayName: Publish Build Artifact - QC
-          condition: eq(variables['qcBuild'],'true')
-          inputs:
-            PathtoPublish: "$(Agent.BuildDirectory)/s/qc.txt"
-            ArtifactName: "qcTempFile"
-            publishLocation: "Container"
-        - task: PublishBuildArtifacts@1
-          displayName: Publish Build Artifact - PROD
-          condition: eq(variables['prodBuild'],'true')
-          inputs:
-            PathtoPublish: "$(Agent.BuildDirectory)/s/prod.txt"
-            ArtifactName: "prodTempFile"
-            publishLocation: "Container"
+      - task: PublishBuildArtifacts@1
+        displayName: Publish Build Artifact - Dev
+        condition: eq(variables['devBuild'],'true')
+        inputs:
+          PathtoPublish: "$(Agent.BuildDirectory)/s/dev.txt"
+          ArtifactName: "devTempFile"
+          publishLocation: "Container"
+      - task: PublishBuildArtifacts@1
+        displayName: Publish Build Artifact - QC
+        condition: eq(variables['qcBuild'],'true')
+        inputs:
+          PathtoPublish: "$(Agent.BuildDirectory)/s/qc.txt"
+          ArtifactName: "qcTempFile"
+          publishLocation: "Container"
+      - task: PublishBuildArtifacts@1
+        displayName: Publish Build Artifact - PROD
+        condition: eq(variables['prodBuild'],'true')
+        inputs:
+          PathtoPublish: "$(Agent.BuildDirectory)/s/prod.txt"
+          ArtifactName: "prodTempFile"
+          publishLocation: "Container"
 
 - stage: DEV
   displayName: 'Deploy DEV'
