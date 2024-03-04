@@ -75,14 +75,13 @@ stages:
         artifactName: "devTempFile"
         downloadPath: "$(System.ArtifactsDirectory)"
     - script: |
-
         $FileNames = Get-Content -Path $(System.ArtifactsDirectory)/devTempFile/dev.txt
         Write-Output "FileNames:"  $FileNames
         Write-Output "FileNames Count:"  $FileNames.Count
         foreach ($fileLines in $FileNames)
           {
+            $subnet=
             terraform init
-            terraform workspace select dev
+            terraform workspace select -or-create=true dev
             terraform apply -var-file=$fileLines
           }
-                  
