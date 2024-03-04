@@ -88,7 +88,7 @@ stages:
         for fileLines in `cat $FileNames`;
           do
             subnet=`echo "$fileLines" | cut -d'-' -f2`
-            terraform init
+            terraform init -migrate-state
             terraform workspace select -or-create=true dev-$subnet
             terraform apply -var-file=$fileLines -auto-approve
           done
