@@ -81,14 +81,19 @@ stages:
     - task: TerraformInstaller@1
       inputs:
         terraformVersion: 'latest'    
-    - script: |
-        FileNames=$(System.ArtifactsDirectory)/devTempFile/dev.txt
-        echo "FileNames: $FileNames"
-        echo "FileNames Count: `echo $FileNames|wc -l`"
-        for fileLines in `cat $FileNames`;
-          do
-            subnet=`echo "$fileLines" | cut -d'-' -f2`
-            terraform init -migrate-state
-            terraform workspace select -or-create=true dev-$subnet
-            terraform apply -var-file=$fileLines -auto-approve
-          done
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: 'AzDO-SC'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          FileNames=$(System.ArtifactsDirectory)/devTempFile/dev.txt
+          echo "FileNames: $FileNames"
+          echo "FileNames Count: `echo $FileNames|wc -l`"
+          for fileLines in `cat $FileNames`;
+            do
+              subnet=`echo "$fileLines" | cut -d'-' -f2`
+              terraform init -migrate-state
+              terraform workspace select -or-create=true dev-$subnet
+              terraform apply -var-file=$fileLines -auto-approve
+            done
