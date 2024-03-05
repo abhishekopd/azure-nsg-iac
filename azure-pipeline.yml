@@ -104,4 +104,93 @@ stages:
               terraform workspace select -or-create=true dev-$subnet
               terraform apply -var-file=$fileLines -auto-approve
             done
-        
+
+- stage: QC
+  displayName: 'Deploy QC'
+  condition: eq(dependencies.GitModifiedFilesStage.outputs['gitModifiedFilesJob.gitModifiedFilesStep.QC'],'QCDeploy')
+  dependsOn:
+  - GitModifiedFilesStage
+  jobs:
+  - job: TerraformApply
+    displayName: 'Terraform Apply'
+    steps:
+    - checkout: self
+    - task: DownloadBuildArtifacts@0
+      displayName: Download the artifact - QC
+      inputs:
+        buildType: "current"
+        downloadType: "single"
+        artifactName: "qcTempFile"
+        downloadPath: "$(System.ArtifactsDirectory)"
+    - task: TerraformInstaller@1
+      inputs:
+        terraformVersion: 'latest'    
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: 'AzDO-SC'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        addSpnToEnvironment: true
+        inlineScript: |
+
+          export ARM_CLIENT_ID=$servicePrincipalId
+          export ARM_CLIENT_SECRET=$servicePrincipalKey
+          export ARM_TENANT_ID=$tenantId
+          export ARM_SUBSCRIPTION_ID=$(az account show --query id | xargs)
+
+          FileNames=$(System.ArtifactsDirectory)/qcTempFile/qc.txt
+          echo "FileNames: $FileNames"
+          echo "FileNames Count: `echo $FileNames|wc -l`"
+          for fileLines in `cat $FileNames`;
+            do
+              subnet=`echo "$fileLines" | cut -d'-' -f2`
+              terraform init
+              terraform workspace select -or-create=true qc-$subnet
+              terraform apply -var-file=$fileLines -auto-approve
+            done
+
+
+- stage: PROD
+  displayName: 'Deploy PROD'
+  condition: eq(dependencies.GitModifiedFilesStage.outputs['gitModifiedFilesJob.gitModifiedFilesStep.PROD'],'PRODDeploy')
+  dependsOn:
+  - GitModifiedFilesStage
+  jobs:
+  - job: TerraformApply
+    displayName: 'Terraform Apply'
+    steps:
+    - checkout: self
+    - task: DownloadBuildArtifacts@0
+      displayName: Download the artifact - PROD
+      inputs:
+        buildType: "current"
+        downloadType: "single"
+        artifactName: "prodTempFile"
+        downloadPath: "$(System.ArtifactsDirectory)"
+    - task: TerraformInstaller@1
+      inputs:
+        terraformVersion: 'latest'    
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: 'AzDO-SC'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        addSpnToEnvironment: true
+        inlineScript: |
+
+          export ARM_CLIENT_ID=$servicePrincipalId
+          export ARM_CLIENT_SECRET=$servicePrincipalKey
+          export ARM_TENANT_ID=$tenantId
+          export ARM_SUBSCRIPTION_ID=$(az account show --query id | xargs)
+
+          FileNames=$(System.ArtifactsDirectory)/prodTempFile/prod.txt
+          echo "FileNames: $FileNames"
+          echo "FileNames Count: `echo $FileNames|wc -l`"
+          for fileLines in `cat $FileNames`;
+            do
+              subnet=`echo "$fileLines" | cut -d'-' -f2`
+              terraform init
+              terraform workspace select -or-create=true prod-$subnet
+              terraform apply -var-file=$fileLines -auto-approve
+            done
+                                
