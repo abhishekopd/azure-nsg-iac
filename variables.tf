@@ -1,7 +1,7 @@
-#variable "nsg_rules" {
-#  description = "The path to the JSON or YAML file containing the NSG rules"
+variable "nsg_rules" {
+  description = "The NSG rules that will apply to the Subnets/NICs"
 #  type        = string
-#}
+}
 
 variable "nsg_name" {
   description = "The name of the NSG to deploy the rules to"
