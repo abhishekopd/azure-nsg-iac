@@ -82,8 +82,9 @@ stages:
       inputs:
         terraformVersion: 'latest'    
     - task: AzureCLI@2
+      displayName: Terraform Apply - DEV
       inputs:
-        azureSubscription: 'AzDO-SC'
+        azureSubscription: 'AzDO-SC'  #Update with your Service Connection.
         scriptType: 'bash'
         scriptLocation: 'inlineScript'
         addSpnToEnvironment: true
@@ -126,8 +127,9 @@ stages:
       inputs:
         terraformVersion: 'latest'    
     - task: AzureCLI@2
+      displayName: Terraform Apply - QC
       inputs:
-        azureSubscription: 'AzDO-SC'
+        azureSubscription: 'AzDO-SC' #Update with your Service Connection.
         scriptType: 'bash'
         scriptLocation: 'inlineScript'
         addSpnToEnvironment: true
@@ -171,8 +173,9 @@ stages:
       inputs:
         terraformVersion: 'latest'    
     - task: AzureCLI@2
+      displayName: Terraform Apply - QC
       inputs:
-        azureSubscription: 'AzDO-SC'
+        azureSubscription: 'AzDO-SC'  #Update with your Service Connection.
         scriptType: 'bash'
         scriptLocation: 'inlineScript'
         addSpnToEnvironment: true
