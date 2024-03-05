@@ -14,7 +14,7 @@ provider "azurerm" {
 }
 
 locals {
-  nsg_rules = jsondecode(file(var.nsg_rules))
+  nsg_rules = jsondecode(var.nsg_rules)
 }
 
 resource "azurerm_network_security_rule" "nsg_rule" {
